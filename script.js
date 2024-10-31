@@ -15,12 +15,6 @@ window.onload = function () {
 };
 
 function setMines() {
-  // minesLocation.push("2-2");
-  // minesLocation.push("2-3");
-  // minesLocation.push("5-6");
-  // minesLocation.push("3-4");
-  // minesLocation.push("1-1");
-
   let minesLeft = minesCount;
   while (minesLeft > 0) {
     let r = Math.floor(Math.random() * rows);
