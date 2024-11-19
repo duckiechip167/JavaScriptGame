@@ -3,18 +3,20 @@ let rows = 8;
 let columns = 8;
 
 let minesCount = 10;
-let minesLocation = []; // "2-2", "3-4", "2-1"
+let minesLocation = [];
 
-let tilesClicked = 0; //goal to click all tiles except the ones containing mines
+let tilesClicked = 0;
 let flagEnabled = false;
-
 let gameOver = false;
 
 window.onload = function () {
+  document.getElementById("restart-button").addEventListener("click", restartGame); // Add event listener for restart
+  document.getElementById("flag-button").addEventListener("click", setFlag); // Add event listener for flag button
   startGame();
 };
 
 function setMines() {
+  minesLocation = [];
   let minesLeft = minesCount;
   while (minesLeft > 0) {
     let r = Math.floor(Math.random() * rows);
@@ -29,35 +31,38 @@ function setMines() {
 }
 
 function startGame() {
+  board = [];
+  gameOver = false;
+  tilesClicked = 0;
+  flagEnabled = false;
+  document.getElementById("flag-button").style.backgroundColor = "lightgray";
   document.getElementById("mines-count").innerText = minesCount;
-  document.getElementById("flag-button").addEventListener("click", setFlag);
+
+  const boardElement = document.getElementById("board");
+  boardElement.innerHTML = ""; // Clear board
+
   setMines();
 
-  //populate our board
   for (let r = 0; r < rows; r++) {
     let row = [];
     for (let c = 0; c < columns; c++) {
-      //<div id="0-0"></div>
       let tile = document.createElement("div");
       tile.id = r.toString() + "-" + c.toString();
       tile.addEventListener("click", clickTile);
-      document.getElementById("board").append(tile);
+      boardElement.append(tile);
       row.push(tile);
     }
     board.push(row);
   }
+}
 
-  console.log(board);
+function restartGame() {
+  startGame();
 }
 
 function setFlag() {
-  if (flagEnabled) {
-    flagEnabled = false;
-    document.getElementById("flag-button").style.backgroundColor = "lightgray";
-  } else {
-    flagEnabled = true;
-    document.getElementById("flag-button").style.backgroundColor = "darkgray";
-  }
+  flagEnabled = !flagEnabled; // Toggle flag state
+  document.getElementById("flag-button").style.backgroundColor = flagEnabled ? "darkgray" : "lightgray";
 }
 
 function clickTile() {
@@ -76,7 +81,6 @@ function clickTile() {
   }
 
   if (minesLocation.includes(tile.id)) {
-    // alert("GAME OVER");
     gameOver = true;
     revealMines();
     return;
@@ -113,19 +117,19 @@ function checkMine(r, c) {
 
   let minesFound = 0;
 
-  //top 3
-  minesFound += checkTile(r - 1, c - 1); //top left
-  minesFound += checkTile(r - 1, c); //top
-  minesFound += checkTile(r - 1, c + 1); //top right
+  // Top 3
+  minesFound += checkTile(r - 1, c - 1); // Top left
+  minesFound += checkTile(r - 1, c); // Top
+  minesFound += checkTile(r - 1, c + 1); // Top right
 
-  //left and right
-  minesFound += checkTile(r, c - 1); //left
-  minesFound += checkTile(r, c + 1); //right
+  // Left and right
+  minesFound += checkTile(r, c - 1); // Left
+  minesFound += checkTile(r, c + 1); // Right
 
-  //bottom 3
-  minesFound += checkTile(r + 1, c - 1); //bottom left
-  minesFound += checkTile(r + 1, c); //bottom
-  minesFound += checkTile(r + 1, c + 1); //bottom right
+  // Bottom 3
+  minesFound += checkTile(r + 1, c - 1); // Bottom left
+  minesFound += checkTile(r + 1, c); // Bottom
+  minesFound += checkTile(r + 1, c + 1); // Bottom right
 
   if (minesFound > 0) {
     board[r][c].innerText = minesFound;
@@ -133,19 +137,19 @@ function checkMine(r, c) {
   } else {
     board[r][c].innerText = "";
 
-    //top 3
-    checkMine(r - 1, c - 1); //top left
-    checkMine(r - 1, c); //top
-    checkMine(r - 1, c + 1); //top right
+    // Top 3
+    checkMine(r - 1, c - 1); // Top left
+    checkMine(r - 1, c); // Top
+    checkMine(r - 1, c + 1); // Top right
 
-    //left and right
-    checkMine(r, c - 1); //left
-    checkMine(r, c + 1); //right
+    // Left and right
+    checkMine(r, c - 1); // Left
+    checkMine(r, c + 1); // Right
 
-    //bottom 3
-    checkMine(r + 1, c - 1); //bottom left
-    checkMine(r + 1, c); //bottom
-    checkMine(r + 1, c + 1); //bottom right
+    // Bottom 3
+    checkMine(r + 1, c - 1); // Bottom left
+    checkMine(r + 1, c); // Bottom
+    checkMine(r + 1, c + 1); // Bottom right
   }
 
   if (tilesClicked == rows * columns - minesCount) {
